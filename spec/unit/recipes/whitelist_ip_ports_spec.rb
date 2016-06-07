@@ -32,10 +32,10 @@ describe 'iptables-patterns::whitelist_ip_ports' do
       ChefSpec::SoloRunner.new do |node|
         node.set['iptables-patterns']['firewalls'] = ['test']
 
-        node.set['iptables-test']['tcp_ports'] = ['80', '443']
+        node.set['iptables-test']['tcp_ports'] = %w(80 443)
         node.set['iptables-test']['udp_ports'] = ['1090']
 
-        node.set['iptables-test']['firewalled_chains'] = ['INPUT', 'FORWARD']
+        node.set['iptables-test']['firewalled_chains'] = %w(INPUT FORWARD)
         node.set['iptables-test']['whitelist_action'] = 'RETURN'
 
         node.set['iptables-test']['whitelist_ipv4_addresses'] = ['1.2.3.4', '5.6.7.8']
@@ -110,10 +110,10 @@ describe 'iptables-patterns::whitelist_ip_ports' do
       ChefSpec::SoloRunner.new do |node|
         node.set['iptables-patterns']['firewalls'] = ['test']
 
-        node.set['iptables-test']['tcp_ports'] = ['80', '443']
+        node.set['iptables-test']['tcp_ports'] = %w(80 443)
         node.set['iptables-test']['udp_ports'] = ['1090']
 
-        node.set['iptables-test']['firewalled_chains'] = ['INPUT', 'FORWARD']
+        node.set['iptables-test']['firewalled_chains'] = %w(INPUT FORWARD)
         node.set['iptables-test']['whitelist_action'] = 'RETURN'
 
         node.set['iptables-test']['whitelist_ipv4_addresses'] = []

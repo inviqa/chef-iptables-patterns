@@ -46,18 +46,18 @@ node['iptables-standard']['allowed_incoming_ports'].each do |rule, port|
   end
 end
 
-iptables_ng_rule "30-established" do
+iptables_ng_rule '30-established' do
   chain 'STANDARD-FIREWALL'
   rule '--match state --state RELATED,ESTABLISHED --jump ACCEPT'
 end
 
 node['iptables-ng']['enabled_ip_versions'].each do |version|
-  case version
-  when 6
-    reject_with = 'icmp6-port-unreachable'
-  else
-    reject_with = 'icmp-port-unreachable'
-  end
+  reject_with = case version
+                when 6
+                  'icmp6-port-unreachable'
+                else
+                  'icmp-port-unreachable'
+                end
 
   iptables_ng_rule "zzzz-reject_other-ipv#{version}" do
     chain 'STANDARD-FIREWALL'
@@ -67,8 +67,10 @@ node['iptables-ng']['enabled_ip_versions'].each do |version|
 end
 
 begin
-  f2b_service = resources(:service => 'fail2ban')
+  f2b_service = resources(service: 'fail2ban')
   f2b_service.subscribes :restart, 'ruby_block[restart_iptables]', :delayed
 rescue Chef::Exceptions::ResourceNotFound
-  # fail2ban service doesn't exist, so doesn't need to restart after iptables
+  log 'fail2ban service does not exist, so does not need to restart after iptables' do
+    level :info
+  end
 end

@@ -35,7 +35,7 @@ describe 'iptables-patterns::frontend_permissive_ports' do
       end
     end
   end
-  
+
   context 'with additonal config' do
     rules = {
       'rsync' => 'rsync',
@@ -48,7 +48,7 @@ describe 'iptables-patterns::frontend_permissive_ports' do
       end.converge(described_recipe)
     end
 
-    it "creates the additional mappings" do
+    it 'creates the additional mappings' do
       rules.each do |rule, port|
         expect(chef_run).to create_iptables_ng_rule("20-#{rule}").with(
           chain: 'STANDARD-FIREWALL',
@@ -57,7 +57,7 @@ describe 'iptables-patterns::frontend_permissive_ports' do
       end
     end
 
-    it "still creates default rules" do
+    it 'still creates default rules' do
       %w(
         http
         https
@@ -88,7 +88,7 @@ describe 'iptables-patterns::frontend_permissive_ports' do
       'ssh' => 'ssh'
     }
 
-    it "creates the remapped and default rules" do
+    it 'creates the remapped and default rules' do
       test_rules.each do |rule, port|
         expect(chef_run).to create_iptables_ng_rule("20-#{rule}").with(
           chain: 'STANDARD-FIREWALL',
@@ -97,8 +97,8 @@ describe 'iptables-patterns::frontend_permissive_ports' do
       end
     end
 
-    it "deletes unmapped rules" do
-      expect(chef_run).to delete_iptables_ng_rule("20-https")
+    it 'deletes unmapped rules' do
+      expect(chef_run).to delete_iptables_ng_rule('20-https')
     end
   end
 end
