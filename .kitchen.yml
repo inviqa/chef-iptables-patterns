@@ -15,7 +15,31 @@ platforms:
   - name: centos-7.1
 
 suites:
-  - name: default
+  - name: frontend-permissive-ports
     run_list:
-      - recipe[iptables-patterns::default]
+      - recipe[iptables-patterns::frontend_permissive_ports]
     attributes:
+
+  - name: whitelist-ip-ports
+    run_list:
+      - recipe[iptables-patterns::whitelist_ip_ports]
+    attributes:
+      iptables-patterns:
+        firewalls:
+          - test
+      iptables-test:
+        tcp_ports:
+          - 22
+          - 80
+        udp_ports:
+          - 1090
+        firewalled_chains:
+          - INPUT
+          - FORWARD
+        whitelist_action: RETURN
+        whitelist_ipv4_addresses:
+          - '1.2.3.4'
+          - '5.6.7.8'
+          - '10.0.2.2'
+        whitelist_ipv6_addresses:
+          - '::1'
