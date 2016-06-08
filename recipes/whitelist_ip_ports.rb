@@ -45,7 +45,7 @@ node['iptables-patterns']['firewalls'].each do |firewall_name|
       rule used_protocols.map { |protocol|
         portmatch = "--destination-ports #{node["iptables-#{firewall_name}"]["#{protocol}_ports"].join(',')}"
 
-        "--protocol #{protocol} --match multiport #{portmatch} --jump =#{chain_firewall_name}"
+        "--protocol #{protocol} --match multiport #{portmatch} --jump #{chain_firewall_name}"
       }
     end
   end

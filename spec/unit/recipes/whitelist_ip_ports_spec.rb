@@ -51,8 +51,8 @@ describe 'iptables-patterns::whitelist_ip_ports' do
       expect(chef_run).to create_iptables_ng_rule('10-test-firewall-INPUT').with(
         chain: 'INPUT',
         rule: [
-          '--protocol tcp --match multiport --destination-ports 80,443 --jump =TEST-FIREWALL',
-          '--protocol udp --match multiport --destination-ports 1090 --jump =TEST-FIREWALL'
+          '--protocol tcp --match multiport --destination-ports 80,443 --jump TEST-FIREWALL',
+          '--protocol udp --match multiport --destination-ports 1090 --jump TEST-FIREWALL'
         ]
       )
     end
@@ -61,8 +61,8 @@ describe 'iptables-patterns::whitelist_ip_ports' do
       expect(chef_run).to create_iptables_ng_rule('10-test-firewall-FORWARD').with(
         chain: 'FORWARD',
         rule: [
-          '--protocol tcp --match multiport --destination-ports 80,443 --jump =TEST-FIREWALL',
-          '--protocol udp --match multiport --destination-ports 1090 --jump =TEST-FIREWALL'
+          '--protocol tcp --match multiport --destination-ports 80,443 --jump TEST-FIREWALL',
+          '--protocol udp --match multiport --destination-ports 1090 --jump TEST-FIREWALL'
         ]
       )
     end
