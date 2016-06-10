@@ -7,6 +7,71 @@ whitelisted IPs.
 Uses `iptables-ng` ( https://supermarket.chef.io/cookbooks/iptables-ng ) to do 
 the heavy lifting.
 
+How to use this cookbook
+------------------------
+
+h3. Allowing all traffic to ports
+
+The `frontend_permissive_ports` recipe determines which ports are open and closed to external traffic on the server.
+By default, it will set up a `STANDARD-FIREWALL` chain that allows communication from all IP addresses to ports:
+
+- 22 (ssh)
+- 80 (http)
+- 443 (https)
+
+The local interface, lo, will be allowed to talk to itself, so 127.0.0.1 on all ports will function.
+
+Any IP address will be able to ping the server.
+See https://security.stackexchange.com/questions/22711/is-it-a-bad-idea-for-a-firewall-to-block-icmp for an interesting
+discussion about this.
+
+Any RELATED or ESTABLISHED traffic will also be let through.
+
+Any other traffic will be rejected with an icmp-port-unreachable or icmp6-port-unreachable response.
+
+
+h3. Whitelisting IPs to ports
+
+The `whitelist_ip_ports` recipe can write out rules for many different custom firewall chains.
+This builds upon the `frontend_permissive_ports` recipe which determines which ports are open, to then determine
+which IPs the ports are actually open to.
+
+Any non-whitelisted traffic will be dropped.
+
+For every firewall chain that you wish to create, add the name to this firewalls array:
+`node['iptables-patterns']['firewalls'] = ['readme']`
+
+This will cause the recipe to pick up on `node['iptables-readme']`.
+
+For every firewall chain in the firewalls array, the following is expected:
+`node['iptables-readme']['firewalled_chains'] = ['INPUT', 'FORWARD']` - which standard firewall chains should be used to
+hook into the new one.
+
+`node['iptables-readme']['tcp_ports']` = [80, 443, 1080]` - which TCP ports should be filtered through the new firewall
+chain. This should contain at least the ports that are in `node['iptables-standard']['allowed_incoming_ports']` for any
+traffic from the whitelisted IPs to not be rejected.
+
+`node['iptables-readme']['udp_ports'] = []` - which UDP ports should be filtered through the new firewall chain
+
+`node['iptables-readme']['whitelist_action'] = 'RETURN'` - what to do when a whitelisted IP is matched. 'RETURN' is
+recommended, rather than 'ACCEPT' as there may be further firewall chains that filter traffic more.
+
+```
+node['iptables-readme']['whitelist_ipv4_addresses'] = [
+  '127.0.0.1', # Allow localhost to access services
+  '1.2.3.4',
+  '5.6.7.8/32'
+]
+```
+The IPv4 addresses that are allowed to communicate with the server, to the TCP and UDP ports defined earlier.
+
+```
+node['iptables-readme']['whitelist_ipv6_addresses'] = [
+  '::1' # Allow localhost to access services
+]
+```
+The IPv6 addresses that are allowed to communicate with the server, to the TCP and UDP ports defined earlier.
+
 Contributing
 ------------
 
