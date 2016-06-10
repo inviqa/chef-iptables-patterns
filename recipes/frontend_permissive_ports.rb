@@ -27,19 +27,19 @@ end
 
 iptables_ng_rule '10-local' do
   chain 'STANDARD-FIREWALL'
-  rule '--in-interface lo --jump ACCEPT'
+  rule '--in-interface lo --jump RETURN'
 end
 
 iptables_ng_rule '10-icmp' do
   chain 'STANDARD-FIREWALL'
-  rule '--protocol icmp --jump ACCEPT'
+  rule '--protocol icmp --jump RETURN'
 end
 
 node['iptables-standard']['allowed_incoming_ports'].each do |rule, port|
   iptables_ng_rule "20-#{rule}" do
     chain 'STANDARD-FIREWALL'
     if port
-      rule "--protocol tcp --dport #{port} --jump ACCEPT"
+      rule "--protocol tcp --dport #{port} --jump RETURN"
     else
       action :delete
     end
@@ -48,7 +48,7 @@ end
 
 iptables_ng_rule '30-established' do
   chain 'STANDARD-FIREWALL'
-  rule '--match state --state RELATED,ESTABLISHED --jump ACCEPT'
+  rule '--match state --state RELATED,ESTABLISHED --jump RETURN'
 end
 
 node['iptables-ng']['enabled_ip_versions'].each do |version|
