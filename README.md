@@ -97,6 +97,12 @@ node['iptables-readme']['whitelist_ipv6_addresses'] = [
 ]
 ```
 
+### Hooking up fail2ban and iptables-ng
+
+If using the `fail2ban` cookbook, it is agnostic as to the cookbook that configures iptables.
+So, use the `iptables-patterns::fail2ban` recipe to hook up a restart of fail2ban every time the iptables rules change
+via `iptables-ng`.
+
 ### LWRPs
 
 #### iptables_patterns_permissive_ports
