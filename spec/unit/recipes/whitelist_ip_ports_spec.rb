@@ -41,9 +41,9 @@ describe 'iptables-patterns::whitelist_ip_ports' do
     it 'uses the LWRP to whitelist IPs' do
       expect(chef_run).to create_iptables_patterns_whitelist_ips('test')
         .with(
-          tcp_ports: ['80', '443'],
+          tcp_ports: %w(80 443),
           udp_ports: ['1090'],
-          firewalled_chains: ['INPUT', 'FORWARD'],
+          firewalled_chains: %w(INPUT FORWARD),
           whitelist_action: 'RETURN',
           whitelist_ipv4_addresses: ['1.2.3.4', '5.6.7.8'],
           whitelist_ipv6_addresses: ['::1'],

@@ -16,7 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 node['iptables-patterns']['firewalls'].each do |firewall_name|
   data = node["iptables-#{firewall_name}"]
 

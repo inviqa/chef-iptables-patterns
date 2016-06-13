@@ -153,9 +153,9 @@ describe 'iptables-patterns::frontend_permissive_ports' do
   end
 
   context 'with custom firewall chain name' do
-    let(:chain_name) {
+    let(:chain_name) do
       'NONSTANDARD-FIREWALL'
-    }
+    end
 
     cached(:chef_run) do
       ChefSpec::SoloRunner.new(step_into: 'iptables_patterns_permissive_ports') do |node|

@@ -22,7 +22,7 @@ provides :iptables_patterns_whitelist_ips
 property :chain_firewall_name, String, name_property: true
 property :tcp_ports, Array, default: []
 property :udp_ports, Array, default: []
-property :firewalled_chains, Array, default: ['INPUT', 'FORWARD']
+property :firewalled_chains, Array, default: %w(INPUT FORWARD)
 property :whitelist_action, String, default: 'RETURN'
 property :whitelist_ipv4_addresses, Array, default: []
 property :whitelist_ipv6_addresses, Array, default: []

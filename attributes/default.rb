@@ -10,7 +10,7 @@ default['iptables-standard']['allowed_incoming_ports'] = {
 
 default['iptables-whitelist-example']['name'] = 'example'
 default['iptables-whitelist-example']['type'] = 'whitelist_ips'
-default['iptables-whitelist-example']['firewalled_chains'] = ['INPUT', 'FORWARD']
+default['iptables-whitelist-example']['firewalled_chains'] = %w(INPUT FORWARD)
 default['iptables-whitelist-example']['tcp_ports'] = [80, 443, 1080]
 default['iptables-whitelist-example']['udp_ports'] = []
 default['iptables-whitelist-example']['whitelist_action'] = 'RETURN'

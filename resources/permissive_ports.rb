@@ -19,7 +19,7 @@
 resource_name :iptables_patterns_permissive_ports
 
 property :chain_firewall_name, String, name_property: true
-property :allowed_incoming_ports, Hash, default: {ssh: 'ssh'}
+property :allowed_incoming_ports, Hash, default: { ssh: 'ssh' }
 property :enabled_ip_versions, Array, default: [4, 6]
 
 actions [:create]

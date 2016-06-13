@@ -38,9 +38,7 @@ action :create do
     new_resource.send("#{protocol}_ports")
   end
 
-  if used_protocols.empty?
-    raise "You must set #{missing_attrs.join(' or ')}."
-  end
+  raise "You must set #{missing_attrs.join(' or ')}." if used_protocols.empty?
 
   new_resource.firewalled_chains.each do |chain|
     iptables_ng_rule "10-#{firewall_name}-firewall-#{chain}" do
