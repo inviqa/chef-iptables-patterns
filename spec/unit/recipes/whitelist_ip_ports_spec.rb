@@ -19,17 +19,9 @@
 require 'spec_helper'
 
 describe 'iptables-patterns::whitelist_ip_ports' do
-  context 'with default config' do
-    cached(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
-
-    it 'includes frontend_permissive_ports' do
-      expect(chef_run).to include_recipe('iptables-patterns::frontend_permissive_ports')
-    end
-  end
-
   context 'with a custom firewall' do
     cached(:chef_run) do
-      ChefSpec::SoloRunner.new do |node|
+      ChefSpec::SoloRunner.new(step_into: 'iptables_patterns_whitelist_ips') do |node|
         node.set['iptables-patterns']['firewalls'] = ['test']
 
         node.set['iptables-test']['name'] = 'test'
@@ -44,6 +36,19 @@ describe 'iptables-patterns::whitelist_ip_ports' do
         node.set['iptables-test']['whitelist_ipv4_addresses'] = ['1.2.3.4', '5.6.7.8']
         node.set['iptables-test']['whitelist_ipv6_addresses'] = ['::1']
       end.converge(described_recipe)
+    end
+
+    it 'uses the LWRP to whitelist IPs' do
+      expect(chef_run).to create_iptables_patterns_whitelist_ips('test')
+        .with(
+          tcp_ports: ['80', '443'],
+          udp_ports: ['1090'],
+          firewalled_chains: ['INPUT', 'FORWARD'],
+          whitelist_action: 'RETURN',
+          whitelist_ipv4_addresses: ['1.2.3.4', '5.6.7.8'],
+          whitelist_ipv6_addresses: ['::1'],
+          enabled_ip_versions: [4, 6]
+        )
     end
 
     it 'creates a chain for the custom firewall' do
@@ -110,7 +115,7 @@ describe 'iptables-patterns::whitelist_ip_ports' do
 
   context 'with no whitelisted IPs' do
     cached(:chef_run) do
-      ChefSpec::SoloRunner.new do |node|
+      ChefSpec::SoloRunner.new(step_into: 'iptables_patterns_whitelist_ips') do |node|
         node.set['iptables-patterns']['firewalls'] = ['test']
 
         node.set['iptables-test']['name'] = 'test'

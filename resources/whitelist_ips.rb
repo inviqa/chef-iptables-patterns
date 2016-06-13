@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: iptables-patterns
-# Recipe:: whitelist_ip_ports
+# Resource:: whitelist_ips
 #
 # Copyright 2016 Inviqa UK LTD
 #
@@ -16,19 +16,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-node['iptables-patterns']['firewalls'].each do |firewall_name|
-  data = node["iptables-#{firewall_name}"]
+resource_name :iptables_patterns_whitelist_ips
+provides :iptables_patterns_whitelist_ips
 
-  next if data['type'] != 'whitelist_ips'
+property :chain_firewall_name, String, name_property: true
+property :tcp_ports, Array, default: []
+property :udp_ports, Array, default: []
+property :firewalled_chains, Array, default: ['INPUT', 'FORWARD']
+property :whitelist_action, String, default: 'RETURN'
+property :whitelist_ipv4_addresses, Array, default: []
+property :whitelist_ipv6_addresses, Array, default: []
+property :enabled_ip_versions, Array, default: [4, 6]
 
-  iptables_patterns_whitelist_ips data['name'] do
-    tcp_ports data['tcp_ports']
-    udp_ports data['udp_ports']
-    firewalled_chains data['firewalled_chains']
-    whitelist_action data['whitelist_action']
-    whitelist_ipv4_addresses data['whitelist_ipv4_addresses']
-    whitelist_ipv6_addresses data['whitelist_ipv6_addresses']
-    enabled_ip_versions node['iptables-ng']['enabled_ip_versions']
-    action :create
-  end
-end
+actions [:create]
+default_action :create

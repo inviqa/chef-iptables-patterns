@@ -26,8 +26,11 @@ suites:
     attributes:
       iptables-patterns:
         firewalls:
+          - standard
           - test
       iptables-test:
+        name: test
+        type: whitelist_ips
         tcp_ports:
           - 22
           - 80

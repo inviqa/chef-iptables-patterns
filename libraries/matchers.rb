@@ -20,4 +20,8 @@ if defined?(ChefSpec)
   def create_iptables_patterns_permissive_ports(resource_name)
     ChefSpec::Matchers::ResourceMatcher.new(:iptables_patterns_permissive_ports, :create, resource_name)
   end
+
+  def create_iptables_patterns_whitelist_ips(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:iptables_patterns_whitelist_ips, :create, resource_name)
+  end
 end
