@@ -21,7 +21,7 @@ include_recipe 'iptables-patterns::frontend_permissive_ports'
 node['iptables-patterns']['firewalls'].each do |firewall_name|
   data = node["iptables-#{firewall_name}"]
 
-  next if data.key? 'type' && data['type'] == 'permissive_ports'
+  next if data['type'] != 'whitelist_ips'
 
   chain_firewall_name = "#{firewall_name.upcase}-FIREWALL"
 
@@ -32,7 +32,7 @@ node['iptables-patterns']['firewalls'].each do |firewall_name|
   protocols = %w( tcp udp )
 
   used_protocols = protocols.reject do |protocol|
-    node["iptables-#{firewall_name}"]["#{protocol}_ports"].empty?
+    !data.key? "#{protocol}_ports" || data["#{protocol}_ports"].empty?
   end
 
   missing_attrs = (protocols - used_protocols).map do |protocol|
@@ -40,7 +40,7 @@ node['iptables-patterns']['firewalls'].each do |firewall_name|
   end
 
   if used_protocols.empty?
-    Chef::Application.fatal! "You must set #{missing_attrs.join(' or ')}."
+    raise "You must set #{missing_attrs.join(' or ')}."
   end
 
   node["iptables-#{firewall_name}"]['firewalled_chains'].each do |chain|

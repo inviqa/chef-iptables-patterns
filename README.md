@@ -64,6 +64,10 @@ For every firewall chain that you wish to create, add the name to this firewalls
 This will cause the recipe to pick up on `node['iptables-readme']`.
 
 For every firewall chain in the firewalls array, the following is expected:
+`node['iptables-readme']['name'] = 'readme'` - the name of the firewall chain
+
+`node['iptables-readme']['type'] = 'whitelist_ips'` - use the whitelist_ips LWRP instead of the permissive_ports LWRP.
+
 `node['iptables-readme']['firewalled_chains'] = ['INPUT', 'FORWARD']` - which standard firewall chains should be used to
 hook into the new one.
 

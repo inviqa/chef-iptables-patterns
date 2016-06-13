@@ -32,6 +32,9 @@ describe 'iptables-patterns::whitelist_ip_ports' do
       ChefSpec::SoloRunner.new do |node|
         node.set['iptables-patterns']['firewalls'] = ['test']
 
+        node.set['iptables-test']['name'] = 'test'
+        node.set['iptables-test']['type'] = 'whitelist_ips'
+
         node.set['iptables-test']['tcp_ports'] = %w(80 443)
         node.set['iptables-test']['udp_ports'] = ['1090']
 
@@ -110,6 +113,8 @@ describe 'iptables-patterns::whitelist_ip_ports' do
       ChefSpec::SoloRunner.new do |node|
         node.set['iptables-patterns']['firewalls'] = ['test']
 
+        node.set['iptables-test']['name'] = 'test'
+        node.set['iptables-test']['type'] = 'whitelist_ips'
         node.set['iptables-test']['tcp_ports'] = %w(80 443)
         node.set['iptables-test']['udp_ports'] = ['1090']
 

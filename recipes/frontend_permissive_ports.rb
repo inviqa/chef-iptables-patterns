@@ -20,11 +20,11 @@
 node['iptables-patterns']['firewalls'].each do |firewall_name|
   data = node["iptables-#{firewall_name}"]
 
-  if data.key? 'type' && data['type'] == 'permissive_ports'
-    iptables_patterns_permissive_ports data['name'] do
-      allowed_incoming_ports data['allowed_incoming_ports']
-      enabled_ip_versions node['iptables-ng']['enabled_ip_versions']
-      action :create
-    end
+  next if data['type'] != 'permissive_ports'
+
+  iptables_patterns_permissive_ports data['name'] do
+    allowed_incoming_ports data['allowed_incoming_ports']
+    enabled_ip_versions node['iptables-ng']['enabled_ip_versions']
+    action :create
   end
 end
