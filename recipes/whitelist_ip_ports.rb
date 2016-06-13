@@ -19,6 +19,10 @@
 include_recipe 'iptables-patterns::frontend_permissive_ports'
 
 node['iptables-patterns']['firewalls'].each do |firewall_name|
+  data = node["iptables-#{firewall_name}"]
+
+  next if data.key? 'type' && data['type'] == 'permissive_ports'
+
   chain_firewall_name = "#{firewall_name.upcase}-FIREWALL"
 
   iptables_ng_chain chain_firewall_name do

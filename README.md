@@ -29,6 +29,26 @@ Any RELATED or ESTABLISHED traffic will also be let through.
 
 Any other traffic will be rejected with an icmp-port-unreachable or icmp6-port-unreachable response.
 
+You can override the opened ports by defining more ports in attributes:
+```
+node['iptables-standard']['allowed_incoming_ports'] = {
+  'rsync' => 'rsync',
+  'non-standard-software' => '12345'
+}
+```
+
+The ports for each item in the array are internally mapped by iptables to those defined in /etc/services if not port numbers.
+
+If you want to remap the port numbers of existing ports, you can again do so via attributes:
+```
+node['iptables-standard']['allowed_incoming_ports'] = {
+  'http' => '8080',
+  'https' => false
+}
+```
+This will create a firewall with http port 8080, along with the default ssh port as inherited from the cookbook attributes, leaving the https port blocked.
+
+
 
 h3. Whitelisting IPs to ports
 
