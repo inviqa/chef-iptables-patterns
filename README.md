@@ -10,7 +10,7 @@ the heavy lifting.
 How to use this cookbook
 ------------------------
 
-h3. Allowing all traffic to ports
+### Allowing all traffic to ports
 
 The `frontend_permissive_ports` recipe determines which ports are open and closed to external traffic on the server.
 By default, it will set up a `STANDARD-FIREWALL` chain that allows communication from all IP addresses to ports:
@@ -50,7 +50,7 @@ This will create a firewall with http port 8080, along with the default ssh port
 
 
 
-h3. Whitelisting IPs to ports
+### Whitelisting IPs to ports
 
 The `whitelist_ip_ports` recipe can write out rules for many different custom firewall chains.
 This builds upon the `frontend_permissive_ports` recipe which determines which ports are open, to then determine
@@ -113,10 +113,10 @@ We use the following testing tools on this project, which can be installed by ru
 These will all run when you perform `bundle exec rake test`, however if you wish to know how to run them individually,
 they are listed below.
 
-    RSpec/ChefSpec for spec style TDD: `bundle exec rspec`
-    Test Kitchen for TDD and testing out individual recipes on a test Virtual Machine: `bundle exec kitchen test`
-    Foodcritic to catch Chef specific style/correctness errors: `bundle exec foodcritic . -f any -C`
-    Rubocop to catch Ruby style "offenses": `bundle exec rubocop`
+1. RSpec/ChefSpec for spec style TDD: `bundle exec rspec`
+2. Test Kitchen for TDD and testing out individual recipes on a test Virtual Machine: `bundle exec kitchen test`
+3. Foodcritic to catch Chef specific style/correctness errors: `bundle exec foodcritic . -f any -C`
+4. Rubocop to catch Ruby style "offenses": `bundle exec rubocop`
 
 
 Supermarket share
