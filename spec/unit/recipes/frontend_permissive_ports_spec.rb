@@ -142,4 +142,17 @@ describe 'iptables-patterns::frontend_permissive_ports' do
       expect(chef_run).to delete_iptables_ng_rule('20-https')
     end
   end
+
+  context 'with custom firewall chain name' do
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.set['iptables-patterns']['standard-firewall']['name'] = 'NONSTANDARD'
+      end.converge(described_recipe)
+    end
+
+    it 'creates the chain with the correct name' do
+      expect(chef_run).to_not create_iptables_ng_rule('STANDARD-FIREWALL')
+      expect(chef_run).to create_iptables_ng_rule('NONSTANDARD-FIREWALL')
+    end
+  end
 end

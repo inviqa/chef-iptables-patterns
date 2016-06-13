@@ -18,26 +18,31 @@
 
 include_recipe 'iptables-ng'
 
-iptables_ng_chain 'STANDARD-FIREWALL'
+chain_firewall_name = node['iptables-patterns']['standard-firewall']['name']
+chain_firewall_name = "#{chain_firewall_name.upcase}-FIREWALL"
 
-iptables_ng_rule 'STANDARD-FIREWALL' do
+iptables_ng_chain chain_firewall_name do
+  action :create
+end
+
+iptables_ng_rule chain_firewall_name do
   chain 'INPUT'
-  rule '--jump STANDARD-FIREWALL'
+  rule "--jump #{chain_firewall_name}"
 end
 
 iptables_ng_rule '10-local' do
-  chain 'STANDARD-FIREWALL'
+  chain chain_firewall_name
   rule '--in-interface lo --jump RETURN'
 end
 
 iptables_ng_rule '10-icmp' do
-  chain 'STANDARD-FIREWALL'
+  chain chain_firewall_name
   rule '--protocol icmp --jump RETURN'
 end
 
 node['iptables-standard']['allowed_incoming_ports'].each do |rule, port|
   iptables_ng_rule "20-#{rule}" do
-    chain 'STANDARD-FIREWALL'
+    chain chain_firewall_name
     if port
       rule "--protocol tcp --dport #{port} --jump RETURN"
     else
@@ -47,7 +52,7 @@ node['iptables-standard']['allowed_incoming_ports'].each do |rule, port|
 end
 
 iptables_ng_rule '30-established' do
-  chain 'STANDARD-FIREWALL'
+  chain chain_firewall_name
   rule '--match state --state RELATED,ESTABLISHED --jump RETURN'
 end
 
@@ -60,7 +65,7 @@ node['iptables-ng']['enabled_ip_versions'].each do |version|
                 end
 
   iptables_ng_rule "zzzz-reject_other-ipv#{version}" do
-    chain 'STANDARD-FIREWALL'
+    chain chain_firewall_name
     rule "--jump REJECT --reject-with #{reject_with}"
     ip_version version.to_i
   end
