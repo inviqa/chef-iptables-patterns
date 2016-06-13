@@ -19,9 +19,9 @@
 require 'spec_helper'
 
 describe 'iptables-patterns::frontend_permissive_ports' do
-  context 'with default config' do
-    cached(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
+  let(:chain_name) { 'STANDARD-FIREWALL' }
 
+  shared_examples 'standard firewall' do
     %w(
       http
       https
@@ -29,40 +29,40 @@ describe 'iptables-patterns::frontend_permissive_ports' do
     ).each do |rule|
       it "creates a rule for #{rule}" do
         expect(chef_run).to create_iptables_ng_rule("20-#{rule}").with(
-          chain: 'STANDARD-FIREWALL',
+          chain: chain_name,
           rule: "--protocol tcp --dport #{rule} --jump RETURN"
         )
       end
     end
 
     it 'creates a chain for the standard firewall' do
-      expect(chef_run).to create_iptables_ng_chain('STANDARD-FIREWALL')
+      expect(chef_run).to create_iptables_ng_chain(chain_name)
     end
 
     it 'creates a loopback rule' do
       expect(chef_run).to create_iptables_ng_rule('10-local').with(
-        chain: 'STANDARD-FIREWALL',
+        chain: chain_name,
         rule: '--in-interface lo --jump RETURN'
       )
     end
 
     it 'creates an icmp rule' do
       expect(chef_run).to create_iptables_ng_rule('10-icmp').with(
-        chain: 'STANDARD-FIREWALL',
+        chain: chain_name,
         rule: '--protocol icmp --jump RETURN'
       )
     end
 
     it 'creates an established rule' do
       expect(chef_run).to create_iptables_ng_rule('30-established').with(
-        chain: 'STANDARD-FIREWALL',
+        chain: chain_name,
         rule: '--match state --state RELATED,ESTABLISHED --jump RETURN'
       )
     end
 
     it 'creates a reject rule for ipv4' do
       expect(chef_run).to create_iptables_ng_rule('zzzz-reject_other-ipv4').with(
-        chain: 'STANDARD-FIREWALL',
+        chain: chain_name,
         rule: '--jump REJECT --reject-with icmp-port-unreachable',
         ip_version: 4
       )
@@ -70,11 +70,17 @@ describe 'iptables-patterns::frontend_permissive_ports' do
 
     it 'creates a reject rule for ipv6' do
       expect(chef_run).to create_iptables_ng_rule('zzzz-reject_other-ipv6').with(
-        chain: 'STANDARD-FIREWALL',
+        chain: chain_name,
         rule: '--jump REJECT --reject-with icmp6-port-unreachable',
         ip_version: 6
       )
     end
+  end
+
+  context 'with default config' do
+    cached(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
+
+    it_behaves_like 'standard firewall'
   end
 
   context 'with additonal config' do
@@ -92,24 +98,13 @@ describe 'iptables-patterns::frontend_permissive_ports' do
     it 'creates the additional mappings' do
       rules.each do |rule, port|
         expect(chef_run).to create_iptables_ng_rule("20-#{rule}").with(
-          chain: 'STANDARD-FIREWALL',
+          chain: chain_name,
           rule: "--protocol tcp --dport #{port} --jump RETURN"
         )
       end
     end
 
-    it 'still creates default rules' do
-      %w(
-        http
-        https
-        ssh
-      ).each do |rule|
-        expect(chef_run).to create_iptables_ng_rule("20-#{rule}").with(
-          chain: 'STANDARD-FIREWALL',
-          rule: "--protocol tcp --dport #{rule} --jump RETURN"
-        )
-      end
-    end
+    it_behaves_like 'standard firewall'
   end
 
   context 'with remap config' do
@@ -132,7 +127,7 @@ describe 'iptables-patterns::frontend_permissive_ports' do
     it 'creates the remapped and default rules' do
       test_rules.each do |rule, port|
         expect(chef_run).to create_iptables_ng_rule("20-#{rule}").with(
-          chain: 'STANDARD-FIREWALL',
+          chain: chain_name,
           rule: "--protocol tcp --dport #{port} --jump RETURN"
         )
       end
@@ -144,6 +139,10 @@ describe 'iptables-patterns::frontend_permissive_ports' do
   end
 
   context 'with custom firewall chain name' do
+    let(:chain_name) {
+      'NONSTANDARD-FIREWALL'
+    }
+
     cached(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
         node.set['iptables-patterns']['standard-firewall']['name'] = 'NONSTANDARD'
@@ -154,5 +153,7 @@ describe 'iptables-patterns::frontend_permissive_ports' do
       expect(chef_run).to_not create_iptables_ng_rule('STANDARD-FIREWALL')
       expect(chef_run).to create_iptables_ng_rule('NONSTANDARD-FIREWALL')
     end
+
+    it_behaves_like 'standard firewall'
   end
 end
