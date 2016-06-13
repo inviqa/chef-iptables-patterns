@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: iptables-patterns
-# Recipe:: frontend_permissive_ports
+# Resource:: permissive_ports
 #
 # Copyright 2016 Inviqa UK LTD
 #
@@ -16,9 +16,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+resource_name :iptables_patterns_permissive_ports
 
-iptables_patterns_permissive_ports node['iptables-standard']['name'] do
-  allowed_incoming_ports node['iptables-standard']['allowed_incoming_ports']
-  enabled_ip_versions node['iptables-ng']['enabled_ip_versions']
-  action :create
-end
+property :chain_firewall_name, String, name_property: true
+property :allowed_incoming_ports, Hash, default: {ssh: 'ssh'}
+property :enabled_ip_versions, Array, default: [4, 6]
+
+actions [:create]
+default_action :create

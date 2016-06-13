@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: iptables-patterns
-# Spec:: default
+# Spec:: frontend_permissive_ports
 #
 # Copyright 2016 Inviqa UK LTD
 #
@@ -78,7 +78,21 @@ describe 'iptables-patterns::frontend_permissive_ports' do
   end
 
   context 'with default config' do
-    cached(:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
+    cached(:chef_run) do
+      ChefSpec::SoloRunner.new(step_into: 'iptables_patterns_permissive_ports').converge(described_recipe)
+    end
+
+    it 'uses the LWRP to set up the open ports' do
+      expect(chef_run).to create_iptables_patterns_permissive_ports('standard')
+        .with(
+          allowed_incoming_ports: {
+            'ssh' => 'ssh',
+            'http' => 'http',
+            'https' => 'https'
+          },
+          enabled_ip_versions: [4, 6]
+        )
+    end
 
     it_behaves_like 'standard firewall'
   end
@@ -90,7 +104,7 @@ describe 'iptables-patterns::frontend_permissive_ports' do
     }
 
     cached(:chef_run) do
-      ChefSpec::SoloRunner.new do |node|
+      ChefSpec::SoloRunner.new(step_into: 'iptables_patterns_permissive_ports') do |node|
         node.set['iptables-standard']['allowed_incoming_ports'] = rules
       end.converge(described_recipe)
     end
@@ -114,7 +128,7 @@ describe 'iptables-patterns::frontend_permissive_ports' do
     }
 
     cached(:chef_run) do
-      ChefSpec::SoloRunner.new do |node|
+      ChefSpec::SoloRunner.new(step_into: 'iptables_patterns_permissive_ports') do |node|
         node.set['iptables-standard']['allowed_incoming_ports'] = rules
       end.converge(described_recipe)
     end
@@ -144,8 +158,8 @@ describe 'iptables-patterns::frontend_permissive_ports' do
     }
 
     cached(:chef_run) do
-      ChefSpec::SoloRunner.new do |node|
-        node.set['iptables-patterns']['standard-firewall']['name'] = 'NONSTANDARD'
+      ChefSpec::SoloRunner.new(step_into: 'iptables_patterns_permissive_ports') do |node|
+        node.set['iptables-standard']['name'] = 'nonstandard'
       end.converge(described_recipe)
     end
 

@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: iptables-patterns
-# Spec:: default
+# Spec:: whitelist_ip_ports
 #
 # Copyright 2016 Inviqa UK LTD
 #

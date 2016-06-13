@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: iptables-patterns
-# Recipe:: frontend_permissive_ports
+# Library:: matchers
 #
 # Copyright 2016 Inviqa UK LTD
 #
@@ -16,9 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-iptables_patterns_permissive_ports node['iptables-standard']['name'] do
-  allowed_incoming_ports node['iptables-standard']['allowed_incoming_ports']
-  enabled_ip_versions node['iptables-ng']['enabled_ip_versions']
-  action :create
+if defined?(ChefSpec)
+  def create_iptables_patterns_permissive_ports(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:iptables_patterns_permissive_ports, :create, resource_name)
+  end
 end

@@ -1,1 +1,0 @@
-default['iptables-patterns']['firewalls'] = []
