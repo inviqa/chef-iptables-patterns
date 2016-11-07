@@ -38,9 +38,25 @@ action :create do
     rule '--in-interface lo --jump RETURN'
   end
 
-  iptables_ng_rule '10-icmp' do
+  # cleanup old versions of the rule
+  iptables_ng_rule "10-icmp" do
     chain chain_firewall_name
-    rule '--protocol icmp --jump RETURN'
+    action :delete
+  end
+
+  node['iptables-ng']['enabled_ip_versions'].each do |version|
+    case version
+    when 6
+      icmp = 'ipv6-icmp'
+    else
+      icmp = 'icmp'
+    end
+
+    iptables_ng_rule "10-icmp-ipv#{version}" do
+      chain chain_firewall_name
+      rule "--protocol #{icmp} --jump RETURN"
+      ip_version version.to_i
+    end
   end
 
   new_resource.allowed_incoming_ports.each_pair do |rule, port|
