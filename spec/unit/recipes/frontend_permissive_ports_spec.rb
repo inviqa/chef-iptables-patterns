@@ -46,10 +46,16 @@ describe 'iptables-patterns::frontend_permissive_ports' do
       )
     end
 
-    it 'creates an icmp rule' do
-      expect(chef_run).to create_iptables_ng_rule('10-icmp').with(
+    it "creates separate entries for ipv4 and ipv6 icmp allow" do
+      expect(chef_run).to create_iptables_ng_rule("10-icmp-ipv4").with(
         chain: chain_name,
-        rule: '--protocol icmp --jump RETURN'
+        rule: '--protocol icmp --jump RETURN',
+        ip_version: 4
+      )
+      expect(chef_run).to create_iptables_ng_rule("10-icmp-ipv6").with(
+        chain: chain_name,
+        rule: '--protocol ipv6-icmp --jump RETURN',
+        ip_version: 6
       )
     end
 

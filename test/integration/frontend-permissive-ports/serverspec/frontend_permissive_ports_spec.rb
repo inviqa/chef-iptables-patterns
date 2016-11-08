@@ -9,8 +9,12 @@ describe 'iptables-patterns::frontend_permissive_ports' do
     expect(iptables).to have_rule('-i lo -j RETURN').with_chain('STANDARD-FIREWALL')
   end
 
-  it 'allows all ICMP traffic' do
+  it 'allows all ICMP traffic on ipv4' do
     expect(iptables).to have_rule('-p icmp -j RETURN').with_chain('STANDARD-FIREWALL')
+  end
+
+  it 'allows all ICMP traffic on ipv6' do
+    expect(iptables).to have_rule('-p ipv6-icmp -j RETURN').with_chain('STANDARD-FIREWALL')
   end
 
   it 'allows port 22 to be communicated with' do
